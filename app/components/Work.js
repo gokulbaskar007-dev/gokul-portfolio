@@ -1,55 +1,158 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
-import { featuredProjects, wordpressProjects } from "@/data/profile";
+import { featuredProjects, moreProjects } from "@/data/projects";
+import "./work-shots.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const domain = (u) => u.replace(/^https?:\/\//, "").replace(/\/$/, "");
 
-function Mock({ type, url }) {
+/* ---------- image with graceful fallback ---------- */
+// natural = keep the screenshot's own shape (no cropping) — used for desktop screens
+function Shot({ src, alt, sizes, fallback, natural = false }) {
+  const [failed, setFailed] = useState(!src);
+  if (failed) return natural ? <div className="skel-box">{fallback}</div> : fallback;
+  if (natural)
+    return (
+      <Image src={src} alt={alt} width={0} height={0} sizes={sizes} className="shot-natural" onError={() => setFailed(true)} />
+    );
+  return <Image src={src} alt={alt} fill sizes={sizes} className="shot-img" onError={() => setFailed(true)} />;
+}
+
+function DesktopSkeleton({ app }) {
+  return app ? (
+    <div className="skel skel--app"><aside /><div><i /><i /><i /><i /><i /><i /></div></div>
+  ) : (
+    <div className="skel skel--site"><b /><span className="l1" /><span className="l2" /><span className="l3" /><div><i /><i /><i /></div></div>
+  );
+}
+function PhoneSkeleton() {
+  return <div className="skel skel--phone"><b /><span /><span /><i /><span /><span /></div>;
+}
+
+/* ---------- device frames ---------- */
+function Laptop({ src, alt, app }) {
   return (
-    <div className="mock">
-      <div className="mock__bar">
-        <span /><span /><span />
-        <em>{domain(url)}</em>
-      </div>
-      {type === "site" && (
-        <div className="mock__site">
-          <div className="mock__nav"><b /><i /><i /><i /><u /></div>
-          <div className="mock__hero">
-            <span className="l1" /><span className="l2" /><span className="l3" />
-            <div className="mock__btns"><u /><s /></div>
-          </div>
-          <div className="mock__tiles"><i /><i /><i /></div>
+    <div className="laptop">
+      <div className="laptop__screen">
+        <span className="laptop__cam" />
+        <div className="laptop__view">
+          <Shot natural src={src} alt={alt} sizes="(max-width: 760px) 80vw, 560px" fallback={<DesktopSkeleton app={app} />} />
         </div>
-      )}
-      {type === "app" && (
-        <div className="mock__app">
-          <aside><b /><i /><i /><i /><i /></aside>
-          <div className="mock__board">
-            {["To do", "In progress", "Done"].map((c, ci) => (
-              <div className="mock__col" key={c}>
-                <p>{c}</p>
-                {Array.from({ length: 3 - (ci === 2 ? 1 : 0) }).map((_, k) => (
-                  <div className={`mock__task ${ci === 2 ? "is-done" : ""}`} key={k}>
-                    <span /><span style={{ width: `${50 + ((k * 17 + ci * 11) % 40)}%` }} />
-                  </div>
-                ))}
-              </div>
+      </div>
+      <div className="laptop__base" />
+    </div>
+  );
+}
+
+function Phone({ src, alt, className = "" }) {
+  return (
+    <div className={`phone ${className}`}>
+      <span className="phone__island" />
+      <div className="phone__view">
+        <Shot src={src} alt={alt} sizes="200px" fallback={<PhoneSkeleton />} />
+      </div>
+    </div>
+  );
+}
+
+function Browser({ src, alt, url, app }) {
+  return (
+    <div className="browser">
+      <div className="browser__bar">
+        <span /><span /><span />
+        <em>{url}</em>
+      </div>
+      <div className="browser__view">
+        <Shot natural src={src} alt={alt} sizes="(max-width: 760px) 90vw, 620px" fallback={<DesktopSkeleton app={app} />} />
+      </div>
+    </div>
+  );
+}
+
+function Slide({ s, p }) {
+  const alt = `${p.name} — ${domain(p.url)}`;
+  if (s.type === "browser")
+    return (
+      <div className="slide slide--browser">
+        <Browser src={s.src} alt={`${alt} full screen`} url={domain(p.url)} app={p.mock === "app"} />
+      </div>
+    );
+  if (s.type === "phones")
+    return (
+      <div className="slide slide--phones">
+        {s.srcs.map((src, k) => (
+          <Phone key={src + k} src={src} alt={`${alt} mobile screen ${k + 1}`} className={k === 1 ? "phone--mid" : ""} />
+        ))}
+      </div>
+    );
+  if (s.type === "combo")
+    return (
+      <div className="slide slide--combo">
+        <Laptop src={s.desktop} alt={`${alt} desktop`} app={p.mock === "app"} />
+        <Phone src={s.mobile} alt={`${alt} mobile`} className="phone--float" />
+      </div>
+    );
+  return (
+    <div className="slide slide--laptop">
+      <Laptop src={s.src} alt={`${alt} screen`} app={p.mock === "app"} />
+    </div>
+  );
+}
+
+/* ---------- gallery (arrows, dots, swipe, autoplay on hover) ---------- */
+function Gallery({ p }) {
+  const n = p.slides.length;
+  const [i, setI] = useState(0);
+  const timer = useRef(null);
+  const startX = useRef(null);
+  const go = (d) => setI((v) => (v + d + n) % n);
+
+  const play = () => {
+    if (n < 2) return;
+    clearInterval(timer.current);
+    timer.current = setInterval(() => setI((v) => (v + 1) % n), 2600);
+  };
+  const stop = () => clearInterval(timer.current);
+  useEffect(() => () => clearInterval(timer.current), []);
+
+  return (
+    <div
+      className="gal"
+      onMouseEnter={play}
+      onMouseLeave={stop}
+      onPointerDown={(e) => (startX.current = e.clientX)}
+      onPointerUp={(e) => {
+        if (startX.current === null) return;
+        const dx = e.clientX - startX.current;
+        if (Math.abs(dx) > 40) go(dx < 0 ? 1 : -1);
+        startX.current = null;
+      }}
+    >
+      <div className="gal__track" style={{ transform: `translateX(-${i * 100}%)` }}>
+        {p.slides.map((s, k) => (
+          <div className="gal__item" key={k} aria-hidden={k !== i}>
+            <Slide s={s} p={p} />
+          </div>
+        ))}
+      </div>
+
+      {n > 1 && (
+        <>
+          <span className="gal__count">{i + 1} / {n}</span>
+          <button className="gal__arrow gal__arrow--prev" aria-label="Previous screenshot" onClick={() => go(-1)}>←</button>
+          <button className="gal__arrow gal__arrow--next" aria-label="Next screenshot" onClick={() => go(1)}>→</button>
+          <div className="gal__dots">
+            {p.slides.map((_, k) => (
+              <button key={k} className={k === i ? "is-on" : ""} aria-label={`Screenshot ${k + 1}`} onClick={() => setI(k)} />
             ))}
           </div>
-        </div>
-      )}
-      {type === "grid" && (
-        <div className="mock__grid">
-          {wordpressProjects.map((p) => (
-            <div key={p.name}><span>{p.category}</span><b>{p.name}</b></div>
-          ))}
-        </div>
+        </>
       )}
     </div>
   );
@@ -62,8 +165,6 @@ export default function Work() {
     () => {
       const q = gsap.utils.selector(scope);
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-      // Giant "Selected Work" slides in from both sides
       gsap.fromTo(q(".work-title__a"), { xPercent: -16 }, {
         xPercent: 0, ease: "none",
         scrollTrigger: { trigger: q(".work-title")[0], start: "top bottom", end: "top 30%", scrub: true },
@@ -71,28 +172,6 @@ export default function Work() {
       gsap.fromTo(q(".work-title__b"), { xPercent: 16 }, {
         xPercent: 0, ease: "none",
         scrollTrigger: { trigger: q(".work-title")[0], start: "top bottom", end: "top 30%", scrub: true },
-      });
-
-      // Stacked cards: each card shrinks & dims as the next one covers it
-      // (desktop only — on phones the cards are taller than the screen)
-      const mm = gsap.matchMedia();
-      mm.add("(min-width: 981px)", () => {
-        const cards = q(".work-card");
-        cards.forEach((card, i) => {
-          if (i === cards.length - 1) return;
-          gsap.to(card.querySelector(".work-card__inner"), {
-            scale: 0.9, opacity: 0.35, ease: "none",
-            scrollTrigger: { trigger: cards[i + 1], start: "top bottom", end: "top 15%", scrub: true },
-          });
-        });
-      });
-
-      // Mock screens float in with a slight tilt
-      q(".mock").forEach((m) => {
-        gsap.fromTo(m, { rotateX: 18, y: 60 }, {
-          rotateX: 0, y: 0, ease: "none",
-          scrollTrigger: { trigger: m, start: "top bottom", end: "top 40%", scrub: true },
-        });
       });
     },
     { scope }
@@ -106,24 +185,23 @@ export default function Work() {
       </h2>
 
       <div className="wrap">
-        <div className="work-stack">
-          {featuredProjects.map((p, i) => (
-            <article className="work-card" key={p.index} style={{ top: `${90 + i * 22}px` }}>
-              <div className="work-card__inner">
-                <div className="work-card__info">
-                  <span className="work-card__index">{p.index}</span>
-                  <p className="work-card__kind">{p.kind}</p>
+        <div className="pgrid">
+          {featuredProjects.map((p) => (
+            <article key={p.url} className={`pcard ${p.featured ? "pcard--featured" : ""}`} data-reveal>
+              <Gallery p={p} />
+              <div className="pcard__body">
+                <div className="pcard__head">
                   <h3>{p.name}</h3>
-                  <p className="work-card__story">{p.story}</p>
-                  <div className="pills pills--dark">
+                  <span className="pcard__badge">{p.badge}</span>
+                </div>
+                <p className="pcard__story">{p.story}</p>
+                <div className="pcard__foot">
+                  <div className="pills">
                     {p.stack.map((t) => <span key={t}>{t}</span>)}
                   </div>
-                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="btn btn--dark btn--sm" data-cursor="Visit">
-                    View live <span aria-hidden="true">↗</span>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="pcard__link" data-cursor="Visit">
+                    {domain(p.url)} <span aria-hidden="true">↗</span>
                   </a>
-                </div>
-                <div className="work-card__visual">
-                  <Mock type={p.mock} url={p.url} />
                 </div>
               </div>
             </article>
@@ -133,11 +211,11 @@ export default function Work() {
         <div className="wp-list">
           <div className="wp-list__head" data-reveal>
             <p className="kicker">( More launches )</p>
-            <p>A few of the 25+ WordPress sites I&apos;ve shipped.</p>
+            <p>Part of 25+ WordPress sites I&apos;ve designed and shipped.</p>
           </div>
-          {wordpressProjects.map((p, i) => (
+          {moreProjects.map((p, i) => (
             <a key={p.url} href={p.url} target="_blank" rel="noopener noreferrer" className="wp-row" data-reveal data-cursor="Open">
-              <span className="wp-row__n">{String(i + 1).padStart(2, "0")}</span>
+              <span className="wp-row__n">{String(i + 1 + featuredProjects.length).padStart(2, "0")}</span>
               <span className="wp-row__name">{p.name}</span>
               <span className="wp-row__cat">{p.category}</span>
               <span className="wp-row__arrow" aria-hidden="true">↗</span>
