@@ -1,0 +1,15 @@
+# Gokul B — Full Stack Web Developer & Digital Marketer
+
+> Gokul B is a web developer and digital marketer at Beta Digital Marketing, Bengaluru, India. He builds websites and web applications with Next.js, React, MySQL and WordPress, and handles SEO, GEO (Generative Engine Optimization), AEO (Answer Engine Optimization), social media and post creation.
+
+## Key work
+- betadigitalmarketing.in — agency website built in Next.js + React
+- tasks.betadigitalmarketing.in — full stack task management web app (Next.js, React, MySQL)
+- 25+ WordPress websites, including betadigitalmarketing.com, networkerschamp.com, ipecsolutions.com, learnmoretechnologies.in, genesisclinicblr.com, riyazedapayil.com
+
+## Skills
+Next.js, React, MySQL, WordPress, Elementor, HTML, CSS, Flutter, Java, SEO, GEO, AEO, schema markup, GA4, Google Search Console
+
+## Contact
+- Email: gokulbaskar007@gmail.com
+- LinkedIn: https://www.linkedin.com/in/gokul-b-062165229
