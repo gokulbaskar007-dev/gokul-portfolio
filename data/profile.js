@@ -2,7 +2,7 @@
 //  EDIT THIS ONE FILE TO UPDATE YOUR WHOLE PORTFOLIO
 // ============================================================
 
-export const siteUrl = "https://gokul-portfolio.vercel.app"; // change after Vercel deploy
+export const siteUrl = "https://gokul-portfolio-xi.vercel.app"; // change after Vercel deploy
 
 export const profile = {
   name: "Gokul B",
