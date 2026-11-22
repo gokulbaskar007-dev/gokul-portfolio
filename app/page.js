@@ -1,33 +1,42 @@
+"use client";
+
+import { useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Marquee from "./components/Marquee";
-import Statement from "./components/Statement";
 import Services from "./components/Services";
-import Work from "./components/Work";
-import Process from "./components/Process";
+import About from "./components/About";
+import Tools from "./components/Tools";
+import Projects from "./components/Projects";
 import WebsiteCheck from "./components/WebsiteCheck";
 import Journey from "./components/Journey";
-import Faq from "./components/Faq";
 import Contact from "./components/Contact";
-import { clients, toolkit } from "@/data/profile";
+import Faq from "./components/Faq";
+import Footer from "./components/Footer";
+import LivePreviewModal from "./components/LivePreviewModal";
 
 export default function Home() {
+  const [previewUrl, setPreviewUrl] = useState(null);
+
   return (
     <>
       <Header />
-      <main>
+      <main id="top">
         <Hero />
-        <Marquee items={clients} label="Brands I've built for" />
-        <Statement />
+        <Marquee />
         <Services />
-        <Work />
-        <Marquee items={toolkit} reverse variant="marquee--big" label="My toolkit" />
-        <Process />
+        <About />
+        <Tools />
+        <Projects onPreview={setPreviewUrl} />
         <WebsiteCheck />
         <Journey />
+        <Contact />
         <Faq />
+        <div style={{ height: "70px" }} />
+        <Marquee flat />
       </main>
-      <Contact />
+      <Footer />
+      <LivePreviewModal url={previewUrl} onClose={() => setPreviewUrl(null)} />
     </>
   );
 }

@@ -1,15 +1,36 @@
-# Gokul B — Full Stack Web Developer & Digital Marketer
+# Gokul B — Head of Creative Developer · Next.js & 3D Web Experiences
 
-> Gokul B is a web developer and digital marketer at Beta Digital Marketing, Bengaluru, India. He builds websites and web applications with Next.js, React, MySQL and WordPress, and handles SEO, GEO (Generative Engine Optimization), AEO (Answer Engine Optimization), social media and post creation.
+> Gokul B is the Head of Creative Developer at Beta Digital Marketing, Bengaluru, India. He builds high-performance Next.js websites, immersive 3D web experiences and full-stack web applications with SQL, and leads search optimization across Google (SEO) and generative AI engines (GEO and AEO).
 
-## Key work
-- betadigitalmarketing.in — agency website built in Next.js + React
-- tasks.betadigitalmarketing.in — full stack task management web app (Next.js, React, MySQL)
-- 25+ WordPress websites, including betadigitalmarketing.com, networkerschamp.com, ipecsolutions.com, learnmoretechnologies.in, genesisclinicblr.com, riyazedapayil.com
+## Current Role
+- Head of Creative Developer at Beta Digital Marketing (Bengaluru, India) — Jan 2026 to Present
 
-## Skills
-Next.js, React, MySQL, WordPress, Elementor, HTML, CSS, Flutter, Java, SEO, GEO, AEO, schema markup, GA4, Google Search Console
+## Key Projects
+- Beta Digital Marketing: https://betadigitalmarketing.in/ (Agency website hand-coded in Next.js + React with SEO, GEO, AEO)
+- Beta Tasks: https://tasks.betadigitalmarketing.in/ (Full stack team task platform with Next.js, React, APIs, MySQL)
+- Beta Digital Marketing (.com): https://betadigitalmarketing.com/ (Main agency WordPress & Elementor website with local SEO)
+- iPEC Solutions: https://ipecsolutions.com/ (AI training institute website built in WordPress & Elementor)
+- NetworkersChamp: https://networkerschamp.com/ (IT training institute website, ongoing SEO and Schema markup)
+- LearnMore Technologies: https://learnmoretechnologies.in/ (IT training WordPress website)
+- Genesis Clinic: https://genesisclinicblr.com/ (Healthcare clinic WordPress website with local SEO)
+- Riyaz Edapayil: https://riyazedapayil.com/ (Personal brand website built in WordPress)
+
+## Core Skills
+- Next.js & React (App Router, Server Components, SSR, dynamic apps)
+- 3D Web Design & Three.js (interactive scroll experiences, smooth animations)
+- SQL & MySQL (relational database design, querying, backend APIs)
+- Version Control & CI/CD (Git, GitHub workflows, Vercel deployments)
+- Search Engine Marketing (Technical SEO, Schema Markup, GA4, Search Console)
+- AI Engine Visibility (Generative Engine Optimization - GEO, Answer Engine Optimization - AEO)
+- CMS & Rapid Delivery (WordPress, Elementor, custom landing pages)
+
+## Education
+- Bachelor of Computer Applications (BCA), Indira Gandhi College of Arts and Science (2021–2024)
+- Diploma in Information Technology, Motilal Nehru Government Polytechnic College (2019–2021)
 
 ## Contact
 - Email: gokulbaskar007@gmail.com
+- Phone / WhatsApp: +91 93426 87447
 - LinkedIn: https://www.linkedin.com/in/gokul-b-062165229
+- GitHub: https://github.com/gokulbaskar007-dev
+- Location: Bengaluru, India

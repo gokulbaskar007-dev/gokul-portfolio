@@ -1,77 +1,69 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Logo from "./Logo";
-
-const links = [
-  { href: "#work", label: "Work" },
-  { href: "#services", label: "Services" },
-  { href: "#check", label: "Website Check" },
-  { href: "#journey", label: "About" },
-];
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  const [open, setOpen] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const last = useRef(0);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 30);
-      setHidden(y > 400 && y > last.current && !open);
-      last.current = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
-  }, [open]);
+  }, []);
 
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-      window.__lenis?.stop();
-    } else {
-      document.body.style.overflow = "";
-      window.__lenis?.start();
-    }
-    return () => {
-      document.body.style.overflow = "";
-      window.__lenis?.start();
-    };
-  }, [open]);
+  const toggleMenu = () => {
+    const next = !open;
+    setOpen(next);
+    document.body.classList.toggle("menu-open", next);
+  };
+
+  const closeMenu = () => {
+    setOpen(false);
+    document.body.classList.remove("menu-open");
+  };
 
   return (
-    <header className={`header ${scrolled ? "is-scrolled" : ""} ${hidden ? "is-hidden" : ""} ${open ? "is-open" : ""}`}>
-      <div className="wrap header__inner">
-        <a href="#top" aria-label="Gokul — home">
-          <Logo />
+    <header className={`header ${scrolled ? "scrolled" : ""}`} id="header">
+      <div className="wrap header__in">
+        <a href="#top" className="logo" aria-label="Gokul home" onClick={closeMenu}>
+          <svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true">
+            <rect width="48" height="48" rx="13" fill="#111" />
+            <path
+              d="M33.5 17.2A11.5 11.5 0 1 0 35.5 24H24.5"
+              fill="none"
+              stroke="#fff"
+              strokeWidth="4.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="35.6" cy="12.6" r="2.1" fill="#fff" />
+          </svg>
+          Gokul<sup>°</sup>
         </a>
 
-        <nav className="nav-pill" aria-label="Main">
-          {links.map((l) => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)}>
-              {l.label}
-            </a>
-          ))}
+        <nav className="nav" id="nav" aria-label="Main Navigation">
+          <a href="#top" onClick={closeMenu}>Home</a>
+          <a href="#services" onClick={closeMenu}>Services</a>
+          <a href="#projects" onClick={closeMenu}>Projects</a>
+          <a href="#journey" onClick={closeMenu}>Journey</a>
+          <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
 
-        <a href="#contact" className="btn btn--dark btn--sm header__cta">
-          Let&apos;s talk <span aria-hidden="true">↗</span>
+        <a href="#contact" className="btn btn--dark">
+          Let&apos;s Talk <i>→</i>
         </a>
 
-        <button className="burger" aria-label="Menu" aria-expanded={open} onClick={() => setOpen(!open)}>
+        <button
+          className="burger"
+          id="burger"
+          aria-label="Toggle navigation menu"
+          aria-expanded={open}
+          onClick={toggleMenu}
+        >
           <span />
           <span />
         </button>
-      </div>
-
-      <div className="mobile-menu">
-        {[...links, { href: "#contact", label: "Contact" }].map((l, i) => (
-          <a key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ transitionDelay: `${open ? 80 + i * 50 : 0}ms` }}>
-            {l.label}
-          </a>
-        ))}
       </div>
     </header>
   );

@@ -1,25 +1,14 @@
-// Infinite scrolling strip (pure CSS animation)
-export default function Marquee({ items, reverse = false, label, variant = "" }) {
-  const row = (
-    <div className="marquee__row" aria-hidden="true">
-      {items.map((t, i) => (
-        <span key={i} className="marquee__item">
-          {t}
-          <span className="marquee__sep">✦</span>
-        </span>
-      ))}
-    </div>
-  );
+import { MARQUEE } from "@/data/profile";
+
+export default function Marquee({ flat = false }) {
+  const items = [...MARQUEE, ...MARQUEE, ...MARQUEE, ...MARQUEE];
   return (
-    <section className={`marquee ${variant}`} aria-label={label}>
-      {label && <p className="marquee__label">{label}</p>}
-      <div className={`marquee__track ${reverse ? "marquee__track--rev" : ""}`}>
-        {row}
-        {row}
-        {row}
-        {row}
+    <div className={`band ${flat ? "band--flat" : ""}`} aria-hidden="true">
+      <div className="band__track">
+        {items.map((text, i) => (
+          <span key={i}>{text}</span>
+        ))}
       </div>
-      <span className="sr-only">{items.join(", ")}</span>
-    </section>
+    </div>
   );
 }

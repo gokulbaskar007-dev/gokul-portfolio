@@ -3,21 +3,22 @@ import "@fontsource/instrument-serif/400.css";
 import "@fontsource/instrument-serif/400-italic.css";
 import "./globals.css";
 import SmoothScroll from "./components/SmoothScroll";
-import Preloader from "./components/Preloader";
-import Cursor from "./components/Cursor";
-import { profile, siteUrl, faqs } from "@/data/profile";
+import { profile, siteUrl, FAQS } from "@/data/profile";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
-  title: "Gokul B — Web Developer & SEO Specialist in Bengaluru | Next.js, React, WordPress",
+  title: "Gokul B — Head of Creative Developer | Next.js & 3D Web Experiences, Bengaluru",
   description:
-    "Gokul B designs and codes fast websites and web apps in Next.js, React and WordPress, then gets them found on Google and AI search with SEO, GEO and AEO. Based in Bengaluru.",
+    "Gokul B is the Head of Creative Developer at Beta Digital Marketing, Bengaluru. Next.js, 3D web design, web applications, SQL, SEO, GEO, AEO.",
   keywords: [
     "Gokul B",
-    "web developer Bengaluru",
-    "Next.js developer Bangalore",
+    "Head of Creative Developer",
+    "Next.js developer Bengaluru",
+    "3D Web Design",
     "React developer",
-    "WordPress developer Bengaluru",
+    "Three.js",
+    "SQL",
+    "web applications",
     "SEO specialist Bengaluru",
     "GEO AEO expert",
     "portfolio",
@@ -25,19 +26,25 @@ export const metadata = {
   authors: [{ name: profile.name }],
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Gokul B — Built to impress. Ranked to be found.",
-    description: "Web developer & search marketer in Bengaluru. Next.js, React, WordPress, SEO, GEO, AEO.",
+    title: "Gokul B — Head of Creative Developer | Next.js & 3D Web Experiences, Bengaluru",
+    description:
+      "Head of Creative Developer at Beta Digital Marketing, Bengaluru. Next.js, 3D web design, web applications, SQL, SEO, GEO, AEO.",
     url: siteUrl,
     siteName: "Gokul B",
     locale: "en_IN",
     type: "website",
     images: [{ url: profile.photo, width: 1000, height: 1377, alt: "Gokul B" }],
   },
-  twitter: { card: "summary_large_image", title: "Gokul B — Web Developer & SEO", images: [profile.photo] },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gokul B — Head of Creative Developer",
+    description: "Next.js & 3D Web Experiences · Bengaluru",
+    images: [profile.photo],
+  },
   robots: { index: true, follow: true },
 };
 
-export const viewport = { themeColor: "#f4f4f1" };
+export const viewport = { themeColor: "#ffffff" };
 
 export default function RootLayout({ children }) {
   const jsonLd = [
@@ -45,33 +52,53 @@ export default function RootLayout({ children }) {
       "@context": "https://schema.org",
       "@type": "Person",
       name: profile.name,
-      jobTitle: profile.title,
+      jobTitle: "Head of Creative Developer",
       url: siteUrl,
       image: `${siteUrl}${profile.photo}`,
       email: `mailto:${profile.email}`,
       address: { "@type": "PostalAddress", addressLocality: "Bengaluru", addressCountry: "IN" },
-      worksFor: { "@type": "Organization", name: "Beta Digital Marketing", url: "https://betadigitalmarketing.com/" },
+      worksFor: {
+        "@type": "Organization",
+        name: "Beta Digital Marketing",
+        url: "https://betadigitalmarketing.in/",
+      },
       alumniOf: [
         { "@type": "CollegeOrUniversity", name: "Indira Gandhi College of Arts and Science" },
         { "@type": "EducationalOrganization", name: "Motilal Nehru Government Polytechnic College" },
       ],
-      knowsAbout: ["Next.js", "React", "MySQL", "WordPress", "SEO", "Generative Engine Optimization", "Answer Engine Optimization"],
-      sameAs: [profile.linkedin],
+      knowsAbout: [
+        "Next.js",
+        "React",
+        "3D web design",
+        "Three.js",
+        "SQL",
+        "GitHub",
+        "web applications",
+        "SEO",
+        "Generative Engine Optimization",
+        "Answer Engine Optimization",
+        "digital marketing",
+      ],
+      sameAs: [profile.linkedin, profile.github],
     },
     {
       "@context": "https://schema.org",
       "@type": "FAQPage",
-      mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+      mainEntity: FAQS.map((f) => ({
+        "@type": "Question",
+        name: f.q,
+        acceptedAnswer: { "@type": "Answer", text: f.a },
+      })),
     },
   ];
 
   return (
-    <html lang="en" className="no-js" suppressHydrationWarning>
+    <html lang="en">
       <body>
-        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.replace('no-js','js')" }} />
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-        <Preloader />
-        <Cursor />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <SmoothScroll />
         {children}
       </body>

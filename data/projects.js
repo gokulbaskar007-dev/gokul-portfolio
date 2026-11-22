@@ -1,90 +1,63 @@
 // ============================================================
-//  PROJECTS — gallery cards in the "Selected Work" section
+//  PROJECTS — 10 cards with automatic live screenshots
 //
-//  Optional auto screenshots: `node scripts/capture-screens.mjs`
-//  saves public/projects/<slug>/desktop-1..3.jpg + mobile-1..3.jpg -> then use slides: site("<slug>")
-//
-//  Add more screenshots: save public/projects/<slug>/screen-2.jpg, screen-3.jpg ...
-//  then change shots("<slug>") to shots("<slug>", 3).
-//  Or add any slide by hand, e.g.
-//    { type: "laptop", src: "/projects/tasks/dashboard.png" }
-//    { type: "phones", srcs: ["/projects/x/a.png", "/projects/x/b.png", "/projects/x/c.png"] }
-//  A missing image never breaks the card; a clean placeholder screen shows instead.
+//  Screenshots are automatic from the URL:
+//  1. mShots (WordPress): https://s0.wp.com/mshots/v1/<url>?w=1280&h=800
+//  2. Retry every 3.5s if placeholder image returned
+//  3. Fallback: thum.io
+//  4. Optional 'image' field overrides (e.g. Beta Tasks behind login)
 // ============================================================
 
-// Your own screenshots: public/projects/<slug>/screen-1.jpg (add screen-2.jpg... and list them)
-const shots = (slug, count = 1) =>
-  Array.from({ length: count }, (_, k) => `/projects/${slug}/screen-${k + 1}.jpg`).flatMap((src, k) =>
-    k === 0 ? [{ type: "laptop", src }, { type: "browser", src }] : [{ type: "browser", src }]
-  );
-
-// Optional: 4 slides from the capture script (desktop-1..3 + mobile-1..3)
-// eslint-disable-next-line no-unused-vars
-const site = (slug) => [
-  { type: "combo", desktop: `/projects/${slug}/desktop-1.jpg`, mobile: `/projects/${slug}/mobile-1.jpg` },
-  { type: "phones", srcs: [1, 2, 3].map((n) => `/projects/${slug}/mobile-${n}.jpg`) },
-  { type: "laptop", src: `/projects/${slug}/desktop-2.jpg` },
-  { type: "laptop", src: `/projects/${slug}/desktop-3.jpg` },
-];
-
-export const featuredProjects = [
+export const PROJECTS = [
   {
-    slug: "tasks",
-    name: "Beta Tasks — Team Task Platform",
-    url: "https://tasks.betadigitalmarketing.in/",
-    badge: "Flagship · In production",
-    featured: true, // big full-width card
-    story:
-      "Our agency team was juggling work across chats and spreadsheets. I designed and built a full stack web app: client boards, task assignment, overdue tracking and an admin dashboard with each member's workload and on-time rate. Frontend, APIs, auth and MySQL — all hand-coded.",
-    stack: ["Next.js", "React", "MySQL", "Full Stack"],
-    slides: shots("tasks"),
-    mock: "app",
-  },
-  {
-    slug: "betadigitalmarketing-in",
     name: "Beta Digital Marketing",
     url: "https://betadigitalmarketing.in/",
-    badge: "Next.js · Live",
-    story:
-      "Rebuilt the agency website from a blank file in Next.js and React — faster pages, cleaner design and full control over every SEO detail.",
-    stack: ["Next.js", "React", "SEO"],
-    slides: shots("betadigitalmarketing-in"),
+    kind: "Agency website · Next.js",
+    tags: ["Next.js", "React", "SEO · AEO · GEO"],
   },
   {
-    slug: "ipecsolutions",
-    name: "iPEC Solutions",
-    url: "https://ipecsolutions.com/",
-    badge: "WordPress · Live",
-    story:
-      "Homepage redesign for an AI training institute — custom sections, clear course paths and an SEO-ready structure built to turn browsers into enquiries.",
-    stack: ["WordPress", "Elementor", "SEO"],
-    slides: shots("ipecsolutions"),
+    name: "Beta Tasks",
+    url: "https://tasks.betadigitalmarketing.in/",
+    kind: "Team task platform · Full stack",
+    tags: ["Next.js", "React", "MySQL"],
+    image: "/projects/tasks/screen-1.jpg",
   },
   {
-    slug: "betadigitalmarketing-com",
     name: "Beta Digital Marketing (.com)",
     url: "https://betadigitalmarketing.com/",
-    badge: "WordPress · Live",
-    story:
-      "The agency's main WordPress site — service pages, landing pages and blogs, designed in Elementor and structured to rank for local searches.",
-    stack: ["WordPress", "Elementor", "Local SEO"],
-    slides: shots("betadigitalmarketing-com"),
+    kind: "Agency website · WordPress",
+    tags: ["WordPress", "Elementor", "Local SEO"],
   },
   {
-    slug: "networkerschamp",
+    name: "iPEC Solutions",
+    url: "https://ipecsolutions.com/",
+    kind: "AI training institute · WordPress",
+    tags: ["WordPress", "Elementor", "SEO"],
+  },
+  {
     name: "NetworkersChamp",
     url: "https://networkerschamp.com/",
-    badge: "Website + SEO · Live",
-    story:
-      "Website and ongoing SEO for an IT training institute — course pages, keyword-led blogs and schema, so students find them when they search for courses.",
-    stack: ["WordPress", "SEO", "Schema"],
-    slides: shots("networkerschamp"),
+    kind: "IT training institute · Website + SEO",
+    tags: ["WordPress", "SEO", "Schema"],
   },
-];
-
-// Smaller list below the cards ("More launches")
-export const moreProjects = [
-  { name: "LearnMore Technologies", url: "https://learnmoretechnologies.in/", category: "IT Training" },
-  { name: "Genesis Clinic", url: "https://genesisclinicblr.com/", category: "Healthcare" },
-  { name: "Riyaz Edapayil", url: "https://riyazedapayil.com/", category: "Personal Brand" },
+  {
+    name: "LearnMore Technologies",
+    url: "https://learnmoretechnologies.in/",
+    kind: "IT training · WordPress",
+    tags: ["WordPress", "Elementor"],
+  },
+  {
+    name: "Genesis Clinic",
+    url: "https://genesisclinicblr.com/",
+    kind: "Healthcare clinic · WordPress",
+    tags: ["WordPress", "Local SEO"],
+  },
+  {
+    name: "Riyaz Edapayil",
+    url: "https://riyazedapayil.com/",
+    kind: "Personal brand · WordPress",
+    tags: ["WordPress", "Personal brand"],
+  },
+  { name: "", url: "", kind: "", tags: [] }, // Project 9 — ask user
+  { name: "", url: "", kind: "", tags: [] }, // Project 10 — ask user
 ];
