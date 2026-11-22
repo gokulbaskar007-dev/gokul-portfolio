@@ -62,7 +62,7 @@ export default function Hero() {
               <span>+ websites shipped</span>
             </div>
             <div>
-              <b data-count="10">10</b>
+              <b data-count="8">8</b>
               <span>live projects below</span>
             </div>
             <div>

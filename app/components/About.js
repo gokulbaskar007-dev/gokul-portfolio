@@ -27,7 +27,7 @@ export default function About() {
               <span>Websites delivered</span>
             </div>
             <div>
-              <b>10</b>
+              <b>8</b>
               <span>Featured live projects</span>
             </div>
             <div>

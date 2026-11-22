@@ -58,6 +58,4 @@ export const PROJECTS = [
     kind: "Personal brand · WordPress",
     tags: ["WordPress", "Personal brand"],
   },
-  { name: "", url: "", kind: "", tags: [] }, // Project 9 — ask user
-  { name: "", url: "", kind: "", tags: [] }, // Project 10 — ask user
 ];
