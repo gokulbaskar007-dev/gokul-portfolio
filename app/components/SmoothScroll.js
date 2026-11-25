@@ -5,65 +5,56 @@ import Lenis from "lenis";
 
 export default function SmoothScroll() {
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let lenis;
+    let observer;
+    let pending = [];
 
-    let lenis = null;
-    let raf = null;
-    if (!reduce) {
-      lenis = new Lenis({ duration: 1.15, smoothWheel: true, wheelMultiplier: 1 });
-      raf = (t) => {
-        lenis.raf(t);
-        requestAnimationFrame(raf);
-      };
-      requestAnimationFrame(raf);
-      window.__lenis = lenis;
-    }
-
-    // Anchor links
-    const onClick = (e) => {
-      const a = e.target.closest('a[href^="#"]');
-      if (!a) return;
-      const id = a.getAttribute("href");
-      const isTop = id === "#" || id === "#top";
-      const el = isTop ? document.body : document.querySelector(id);
-      if (!el) return;
-      e.preventDefault();
-      if (lenis) lenis.scrollTo(isTop ? 0 : el, { offset: isTop ? 0 : -80, duration: 1.2 });
-      else el.scrollIntoView({ behavior: "smooth" });
+    const stopMotion = () => {
+      lenis?.destroy();
+      lenis = undefined;
+      observer?.disconnect();
+      observer = undefined;
+      pending.forEach((element) => {
+        element.classList.remove("rv--pending");
+        element.style.removeProperty("transition-delay");
+      });
+      pending = [];
     };
-    document.addEventListener("click", onClick);
 
-    // Scroll reveal
-    const rvEls = document.querySelectorAll(".rv");
-    if (reduce) {
-      rvEls.forEach((el) => el.classList.add("in"));
-    } else {
-      const io = new IntersectionObserver(
+    const syncMotion = () => {
+      stopMotion();
+      if (motion.matches) return;
+
+      lenis = new Lenis({ duration: 1.15, autoRaf: true });
+      if (!("IntersectionObserver" in window)) return;
+
+      const viewportHeight = window.innerHeight;
+      pending = [...document.querySelectorAll(".rv")].filter(
+        (element) => element.getBoundingClientRect().top >= viewportHeight
+      );
+      observer = new IntersectionObserver(
         (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("in");
-              io.unobserve(entry.target);
-            }
+          entries.forEach(({ isIntersecting, target }) => {
+            if (!isIntersecting) return;
+            target.classList.remove("rv--pending");
+            observer?.unobserve(target);
           });
         },
         { threshold: 0.12 }
       );
-      rvEls.forEach((el, i) => {
-        el.style.transitionDelay = `${(i % 4) * 70}ms`;
-        io.observe(el);
+      pending.forEach((element, index) => {
+        element.style.transitionDelay = `${(index % 4) * 70}ms`;
+        element.classList.add("rv--pending");
+        observer.observe(element);
       });
+    };
 
-      return () => {
-        document.removeEventListener("click", onClick);
-        io.disconnect();
-        lenis?.destroy();
-      };
-    }
-
+    syncMotion();
+    motion.addEventListener("change", syncMotion);
     return () => {
-      document.removeEventListener("click", onClick);
-      lenis?.destroy();
+      motion.removeEventListener("change", syncMotion);
+      stopMotion();
     };
   }, []);
 

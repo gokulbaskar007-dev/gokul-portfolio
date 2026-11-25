@@ -1,12 +1,4 @@
-// ============================================================
-//  PROJECTS — 10 cards with automatic live screenshots
-//
-//  Screenshots are automatic from the URL:
-//  1. mShots (WordPress): https://s0.wp.com/mshots/v1/<url>?w=1280&h=800
-//  2. Retry every 3.5s if placeholder image returned
-//  3. Fallback: thum.io
-//  4. Optional 'image' field overrides (e.g. Beta Tasks behind login)
-// ============================================================
+// Prefer a local screenshot when available. Other projects use live screenshots.
 
 export const PROJECTS = [
   {
@@ -14,6 +6,7 @@ export const PROJECTS = [
     url: "https://betadigitalmarketing.in/",
     kind: "Agency website · Next.js",
     tags: ["Next.js", "React", "SEO · AEO · GEO"],
+    image: "/projects/betadigitalmarketing-in/screen-1.jpg",
   },
   {
     name: "Beta Tasks",
@@ -27,18 +20,21 @@ export const PROJECTS = [
     url: "https://betadigitalmarketing.com/",
     kind: "Agency website · WordPress",
     tags: ["WordPress", "Elementor", "Local SEO"],
+    image: "/projects/betadigitalmarketing-com/screen-1.jpg",
   },
   {
     name: "iPEC Solutions",
     url: "https://ipecsolutions.com/",
     kind: "AI training institute · WordPress",
     tags: ["WordPress", "Elementor", "SEO"],
+    image: "/projects/ipecsolutions/screen-1.jpg",
   },
   {
     name: "NetworkersChamp",
     url: "https://networkerschamp.com/",
     kind: "IT training institute · Website + SEO",
     tags: ["WordPress", "SEO", "Schema"],
+    image: "/projects/networkerschamp/screen-1.jpg",
   },
   {
     name: "LearnMore Technologies",

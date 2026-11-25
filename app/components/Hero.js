@@ -1,35 +1,18 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { getImageProps } from "next/image";
+import { profile } from "@/data/profile";
+import HeroStats from "./HeroStats";
 
 export default function Hero() {
-  const statsRef = useRef(null);
-
-  useEffect(() => {
-    const el = statsRef.current;
-    if (!el) return;
-    const counters = el.querySelectorAll("[data-count]");
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        io.disconnect();
-        counters.forEach((c) => {
-          const end = +c.dataset.count;
-          let t0 = null;
-          const step = (t) => {
-            t0 ??= t;
-            const p = Math.min((t - t0) / 1400, 1);
-            c.textContent = Math.round(end * (1 - Math.pow(1 - p, 3)));
-            if (p < 1) requestAnimationFrame(step);
-          };
-          requestAnimationFrame(step);
-        });
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  const { props: photo } = getImageProps({
+    className: "hero__photo",
+    src: profile.photo,
+    alt: "Gokul B — Creative Developer, Bengaluru",
+    width: 1000,
+    height: 1377,
+    sizes: "(max-width: 555px) 72vw, 400px",
+    loading: "eager",
+    fetchPriority: "high",
+  });
 
   return (
     <section className="hero">
@@ -56,31 +39,12 @@ export default function Hero() {
             </a>
           </div>
 
-          <div className="hero__stats rv" ref={statsRef}>
-            <div>
-              <b data-count="25">25</b>
-              <span>+ websites shipped</span>
-            </div>
-            <div>
-              <b data-count="8">8</b>
-              <span>live projects below</span>
-            </div>
-            <div>
-              <b data-count="44">44</b>
-              <span>% traffic growth (SEO)</span>
-            </div>
-          </div>
+          <HeroStats />
         </div>
 
         <div className="hero__visual rv">
           <div className="circle" aria-hidden="true" />
-          <img
-            className="hero__photo"
-            src="/gokul.webp"
-            alt="Gokul B — Creative Developer, Bengaluru"
-            width={400}
-            height={551}
-          />
+          <img {...photo} />
           <div className="chip chip--1">
             <i>N</i>
             <div>

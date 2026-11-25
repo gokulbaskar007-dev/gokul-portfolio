@@ -1,7 +1,6 @@
-# Gokul B — Portfolio v2 (Black & White · Next.js + GSAP)
+# Gokul B — Portfolio
 
-Apple-style, black & white portfolio with cinematic scroll animations and an interactive
-"Website Check" that turns visitors into WhatsApp leads.
+A black-and-white Next.js portfolio with project previews, a résumé download, and a Website Check quiz that visitors can share via WhatsApp.
 
 ## Run it (Google Antigravity)
 
@@ -13,40 +12,36 @@ Apple-style, black & white portfolio with cinematic scroll animations and an int
    ```
 3. Open http://localhost:3000
 
-Node.js 20+ needed (`node -v`).
+Use Node.js 20.9 or later (`node -v`).
 
-## Edit content — one file
+## Edit content
 
-Everything (headline, projects, services, process, quiz questions, journey, FAQ, contact) lives in
-`data/profile.js`. Change text there; the design updates itself.
+Edit profile and section content in `data/profile.js`. Project cards and screenshot paths are in `data/projects.js`.
 
 | What | Where |
 |---|---|
-| All text & links | `data/profile.js` |
+| Profile and section content | `data/profile.js` |
+| Project cards and screenshots | `data/projects.js` |
 | Hero cut-out photo | `public/gokul.webp` (transparent PNG/WebP works best) |
 | About-section photo | `public/gokul-portrait.webp` |
 | Résumé download | `public/gokul-b-resume.pdf` |
 | Colours, fonts, spacing | `app/globals.css` (top `:root`) |
-| Logo (G mark) | `app/components/Logo.js` |
+| Logo and favicon | `app/components/Header.js`, `app/components/Footer.js`, `app/icon.svg` |
 
-## Sections & animations
+### Refresh project screenshots
 
-| Section | Animation |
-|---|---|
-| Preloader | G logo draws itself, 000→100 counter, curtain lifts (first visit only) |
-| Hero | Word-by-word headline reveal, photo rises in, 3D glass chips float + follow the mouse, connector lines draw, rotating badge |
-| Brands marquee | Infinite scroll, pauses on hover |
-| Statement | Words fill grey → black as you scroll, numbers count up |
-| Services (bento) | Cards tilt in 3D toward the mouse |
-| Selected Work | Giant title slides in from both sides; project cards stack and shrink on scroll; screens tilt up |
-| WordPress list | Black fill wipes up on hover |
-| Process | Sticky stacking cards |
-| Website Check | 7-question quiz → animated score ring + personal fix list → "Send my report to Gokul" on WhatsApp |
-| About / Journey | Timeline line draws as you scroll, photo zooms |
-| Contact | Giant GOKUL letters rise, magnetic buttons |
-| Everywhere | Lenis smooth scroll, custom cursor (desktop), fade-up reveals |
+Install the optional capture tool from the project folder. It uses your installed Chrome or Playwright Chromium.
 
-Animations respect "Reduce motion" settings, and the cursor and tilt effects switch off on touch devices.
+```bash
+npm install --no-save --package-lock=false playwright
+node scripts/capture-screens.mjs betadigitalmarketing-in
+```
+
+Omit the slug to capture every configured project. For public projects, the first desktop capture replaces `public/projects/<slug>/screen-1.jpg`, which project cards use for their local screenshot. The script saves the remaining desktop and mobile captures alongside it. Beta Tasks requires a sign-in, so update its dashboard screenshot manually. If Chrome is unavailable, run `npx playwright install chromium`.
+
+## Motion
+
+Lenis smooths wheel scrolling. Content fades in as it enters the viewport, and the hero includes animated counters, floating cards, and a rotating badge. CSS drives the scrolling marquees and card hover effects. The site respects the system’s reduced-motion preference.
 
 ## Free hosting (GitHub + Vercel)
 
@@ -70,5 +65,5 @@ Once it's live, put the real URL in `siteUrl` inside `data/profile.js`, then pus
 
 ## Tech
 
-Next.js 16 · React 19 · GSAP 3 (+ ScrollTrigger, @gsap/react) · Lenis · Inter Tight + Instrument Serif
+Next.js 16 · React 19 · Lenis · Inter Tight + Instrument Serif
 (self-hosted via Fontsource, so there are no Google Fonts calls).

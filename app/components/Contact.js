@@ -1,21 +1,26 @@
 "use client";
 
-import { useState } from "react";
 import { profile } from "@/data/profile";
 
 export default function Contact() {
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    need: "Next.js website",
-    msg: "",
-  });
+  const handleSubmit = (event) => {
+    event.preventDefault();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const msg = `Hi Gokul, I'm ${form.name}.\nI need: ${form.need}\n${form.msg || ""}\n${form.email || ""} ${form.phone || ""}`;
-    window.open(`https://wa.me/${profile.whatsapp}?text=${encodeURIComponent(msg)}`, "_blank");
+    // Field IDs keep their values out of native form submissions.
+    const { elements } = event.currentTarget;
+    const value = (field) => elements.namedItem(`contact-${field}`).value.trim();
+    const message = [
+      `Hi Gokul, I'm ${value("name")}.`,
+      `I need: ${value("need")}`,
+      value("message"),
+      [value("email"), value("phone")].filter(Boolean).join(" "),
+    ].filter(Boolean).join("\n");
+
+    window.open(
+      `https://wa.me/${profile.whatsapp}?text=${encodeURIComponent(message)}`,
+      "_blank",
+      "noopener,noreferrer",
+    );
   };
 
   return (
@@ -44,43 +49,37 @@ export default function Contact() {
             </div>
           </div>
         </div>
-        <form className="form rv" id="contact-form" onSubmit={handleSubmit}>
+        <form className="form rv" id="contact-form" action="#contact" onSubmit={handleSubmit}>
           <label>
             Your name
             <input
-              name="name"
+              id="contact-name"
               required
+              autoComplete="name"
               placeholder="e.g. Priya"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </label>
           <label>
             Email
             <input
-              name="email"
+              id="contact-email"
               type="email"
+              autoComplete="email"
               placeholder="you@company.com"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
           </label>
           <label>
             Phone
             <input
-              name="phone"
+              id="contact-phone"
+              type="tel"
+              autoComplete="tel"
               placeholder="+91"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
           </label>
           <label>
             I need
-            <select
-              name="need"
-              value={form.need}
-              onChange={(e) => setForm({ ...form, need: e.target.value })}
-            >
+            <select id="contact-need">
               <option>Next.js website</option>
               <option>3D web experience</option>
               <option>Web application</option>
@@ -91,10 +90,8 @@ export default function Contact() {
           <label className="full">
             Message
             <textarea
-              name="msg"
+              id="contact-message"
               placeholder="Tell me a little about your project…"
-              value={form.msg}
-              onChange={(e) => setForm({ ...form, msg: e.target.value })}
             />
           </label>
           <button className="btn btn--dark" type="submit">

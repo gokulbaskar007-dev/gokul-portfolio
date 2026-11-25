@@ -1,59 +1,17 @@
-"use client";
-
-import { useEffect, useRef } from "react";
+import { getImageProps } from "next/image";
 import { PROJECTS } from "@/data/projects";
+import ProjectPreviews, { ProjectPreviewButton } from "./ProjectPreviews";
+import RemoteProjectScreenshot from "./RemoteProjectScreenshot";
 
-const domain = (u) => u.replace(/^https?:\/\//, "").replace(/\/$/, "");
-const shotUrl = (u, n = 0) =>
-  `https://s0.wp.com/mshots/v1/${encodeURIComponent(u)}?w=1280&h=800${n ? `&r=${n}` : ""}`;
-const shotFallback = (u) =>
-  `https://image.thum.io/get/width/1280/crop/800/noanimate/${u}`;
+const screenshotSizes =
+  "(max-width: 760px) calc(90vw - 36px), (max-width: 1311px) calc(45vw - 49px), 541px";
 
-function ProjectCard({ project, onPreview }) {
-  const imgRef = useRef(null);
-
-  useEffect(() => {
-    const img = imgRef.current;
-    if (!img) return;
-    const url = project.url;
-    let tries = 0;
-    let timer = null;
-
-    const load = () => {
-      img.src = project.image && tries === 0 ? project.image : shotUrl(url, tries);
-    };
-
-    const handleLoad = () => {
-      if (img.naturalWidth < 900 && tries < 4) {
-        tries++;
-        timer = setTimeout(load, 3500);
-        return;
-      }
-      img.classList.add("ok");
-    };
-
-    const handleError = () => {
-      if (project.image && tries === 0) {
-        tries++;
-        load();
-        return;
-      }
-      if (!img.dataset.fb) {
-        img.dataset.fb = "1";
-        img.src = shotFallback(url);
-      }
-    };
-
-    img.addEventListener("load", handleLoad);
-    img.addEventListener("error", handleError);
-    load();
-
-    return () => {
-      clearTimeout(timer);
-      img.removeEventListener("load", handleLoad);
-      img.removeEventListener("error", handleError);
-    };
-  }, [project]);
+function ProjectCard({ project }) {
+  const host = new URL(project.url).host;
+  const imageAlt = `${project.name} website screenshot`;
+  const screenshot = project.image
+    ? getImageProps({ src: project.image, alt: imageAlt, fill: true, sizes: screenshotSizes }).props
+    : null;
 
   return (
     <article className="proj rv">
@@ -62,19 +20,17 @@ function ProjectCard({ project, onPreview }) {
           <span />
           <span />
           <span />
-          <em>{domain(project.url)}</em>
+          <em>{host}</em>
           <b className="shot__live">Live</b>
         </div>
         <div className="shot__view">
-          <img
-            ref={imgRef}
-            alt={`${project.name} — live website ${domain(project.url)}`}
-            loading="lazy"
-          />
+          {screenshot ? (
+            <img {...screenshot} />
+          ) : (
+            <RemoteProjectScreenshot url={project.url} alt={imageAlt} />
+          )}
           <div className="shot__overlay">
-            <button type="button" onClick={() => onPreview(project.url)}>
-              Live preview
-            </button>
+            <ProjectPreviewButton url={project.url} name={project.name} />
             <a href={project.url} target="_blank" rel="noopener noreferrer">
               Visit ↗
             </a>
@@ -107,7 +63,7 @@ function ProjectCard({ project, onPreview }) {
   );
 }
 
-export default function Projects({ onPreview }) {
+export default function Projects() {
   // Only render projects with a valid URL (never show placeholder cards on live site)
   const activeProjects = PROJECTS.filter((p) => Boolean(p.url));
 
@@ -130,11 +86,13 @@ export default function Projects({ onPreview }) {
             GitHub <i>↗</i>
           </a>
         </div>
-        <div className="projects" id="projects-grid">
-          {activeProjects.map((p) => (
-            <ProjectCard key={p.url} project={p} onPreview={onPreview} />
-          ))}
-        </div>
+        <ProjectPreviews>
+          <div className="projects" id="projects-grid">
+            {activeProjects.map((project) => (
+              <ProjectCard key={project.url} project={project} />
+            ))}
+          </div>
+        </ProjectPreviews>
       </div>
     </section>
   );

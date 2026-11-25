@@ -1,30 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const menuButton = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const toggleMenu = () => {
-    const next = !open;
-    setOpen(next);
-    document.body.classList.toggle("menu-open", next);
-  };
+  useEffect(() => {
+    if (!open) return;
 
-  const closeMenu = () => {
-    setOpen(false);
-    document.body.classList.remove("menu-open");
-  };
+    const onKeyDown = (event) => {
+      if (event.key !== "Escape" || event.defaultPrevented) return;
+      setOpen(false);
+      menuButton.current?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open]);
+
+  const closeMenu = () => setOpen(false);
 
   return (
-    <header className={`header ${scrolled ? "scrolled" : ""}`} id="header">
+    <header className={`header${scrolled ? " scrolled" : ""}${open ? " menu-open" : ""}`} id="header">
       <div className="wrap header__in">
         <a href="#top" className="logo" aria-label="Gokul home" onClick={closeMenu}>
           <svg width="36" height="36" viewBox="0 0 48 48" aria-hidden="true">
@@ -55,11 +60,14 @@ export default function Header() {
         </a>
 
         <button
+          type="button"
           className="burger"
           id="burger"
+          ref={menuButton}
           aria-label="Toggle navigation menu"
+          aria-controls="nav"
           aria-expanded={open}
-          onClick={toggleMenu}
+          onClick={() => setOpen((current) => !current)}
         >
           <span />
           <span />

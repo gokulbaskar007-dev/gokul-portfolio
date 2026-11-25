@@ -1,31 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-export default function LivePreviewModal({ url, onClose }) {
+export default function LivePreviewModal({ url, name, onClose }) {
+  const dialogRef = useRef(null);
+  const closeButtonRef = useRef(null);
+
   useEffect(() => {
-    if (!url) return;
-    const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [url, onClose]);
-
-  if (!url) return null;
+    const dialog = dialogRef.current;
+    if (!dialog.open) dialog.showModal();
+    closeButtonRef.current.focus({ preventScroll: true });
+  }, []);
 
   return (
-    <div
-      className="modal open"
+    <dialog
+      ref={dialogRef}
+      className="modal"
       id="modal"
-      aria-modal="true"
-      role="dialog"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+      aria-label={`Live preview of ${name}`}
+      data-lenis-prevent
+      onClose={onClose}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) event.currentTarget.close();
       }}
     >
       <div className="modal__box">
@@ -34,20 +30,19 @@ export default function LivePreviewModal({ url, onClose }) {
           <a href={url} target="_blank" rel="noopener noreferrer">
             Open site ↗
           </a>
-          <button type="button" onClick={onClose} aria-label="Close modal">
+          <button ref={closeButtonRef} type="button" onClick={() => dialogRef.current.close()}>
             Close ✕
           </button>
         </div>
         <iframe
           src={url}
-          title="Live website preview"
-          loading="lazy"
+          title={`${name} website preview`}
           referrerPolicy="no-referrer"
         />
         <p className="modal__note">
           Live preview. If it stays blank, that site blocks embedding — use “Open site”.
         </p>
       </div>
-    </div>
+    </dialog>
   );
 }

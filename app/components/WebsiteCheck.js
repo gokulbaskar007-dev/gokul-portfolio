@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { quiz, quizGoals, profile } from "@/data/profile";
 
 const OPTIONS = [
@@ -8,6 +8,8 @@ const OPTIONS = [
   { label: "Not sure", key: "N", score: 1 },
   { label: "No", key: "N", score: 0 },
 ];
+const EMPTY_INFO = { name: "", business: "", website: "" };
+const RING_CIRCUMFERENCE = 2 * Math.PI * 46;
 
 function tier(score) {
   if (score >= 80)
@@ -26,11 +28,40 @@ function tier(score) {
   };
 }
 
+function createReport(answers, info, goal) {
+  const score = Math.round((answers.reduce((sum, answer) => sum + answer, 0) / (quiz.length * 2)) * 100);
+  const fixes = quiz
+    .map((item, index) => ({ ...item, s: answers[index] }))
+    .filter((item) => item.s < 2)
+    .sort((a, b) => a.s - b.s);
+  const wins = quiz.filter((_, index) => answers[index] === 2);
+  const lines = [
+    "Hi Gokul, I just took your Website Check.",
+    info.name && `Name: ${info.name}`,
+    info.business && `Business: ${info.business}`,
+    info.website && `Website: ${info.website}`,
+    goal && `Looking for: ${goal}`,
+    `Score: ${score}/100`,
+    fixes.length ? `Needs work: ${fixes.map((fix) => fix.area).join(", ")}` : "",
+    "Can we talk?",
+  ].filter(Boolean);
+
+  return { score, fixes, wins, tier: tier(score), message: encodeURIComponent(lines.join("\n")) };
+}
+
 export default function WebsiteCheck() {
   const [step, setStep] = useState("intro"); // intro | goal | 0..total-1 | details | result
   const [goal, setGoal] = useState("");
   const [answers, setAnswers] = useState([]);
-  const [info, setInfo] = useState({ name: "", business: "", website: "" });
+  const [info, setInfo] = useState(EMPTY_INFO);
+  const lastStep = useRef(step);
+  const prompt = useRef(null);
+
+  useEffect(() => {
+    if (lastStep.current === step) return;
+    lastStep.current = step;
+    prompt.current?.focus();
+  }, [step]);
 
   const total = quiz.length;
   const qIndex = typeof step === "number" ? step : null;
@@ -45,17 +76,7 @@ export default function WebsiteCheck() {
       ? 92
       : 100;
 
-  const score = useMemo(() => {
-    if (!answers.length) return 0;
-    return Math.round((answers.reduce((a, b) => a + b, 0) / (total * 2)) * 100);
-  }, [answers, total]);
-
-  const fixes = quiz
-    .map((item, i) => ({ ...item, s: answers[i] }))
-    .filter((x) => x.s !== undefined && x.s < 2)
-    .sort((a, b) => a.s - b.s);
-
-  const wins = quiz.filter((_, i) => answers[i] === 2);
+  const report = step === "result" ? createReport(answers, info, goal) : null;
 
   const answer = (s) => {
     const next = [...answers];
@@ -74,24 +95,9 @@ export default function WebsiteCheck() {
   const restart = () => {
     setAnswers([]);
     setGoal("");
+    setInfo(EMPTY_INFO);
     setStep("goal");
   };
-
-  const message = useMemo(() => {
-    const lines = [
-      "Hi Gokul, I just took your Website Check.",
-      info.name && `Name: ${info.name}`,
-      info.business && `Business: ${info.business}`,
-      info.website && `Website: ${info.website}`,
-      goal && `Looking for: ${goal}`,
-      `Score: ${score}/100`,
-      fixes.length ? `Needs work: ${fixes.map((f) => f.area).join(", ")}` : "",
-      "Can we talk?",
-    ].filter(Boolean);
-    return encodeURIComponent(lines.join("\n"));
-  }, [info, goal, score, fixes]);
-
-  const C = 2 * Math.PI * 46;
 
   return (
     <section className="section" id="check" style={{ paddingTop: 0 }}>
@@ -102,7 +108,7 @@ export default function WebsiteCheck() {
             Is your website <span className="hl">working for you?</span>
           </h2>
           <p className="sub rv" style={{ color: "var(--muted)", marginTop: "14px", maxWidth: "460px" }}>
-            Answer 7 quick questions, get a score and a personal fix list — then send it to me on WhatsApp if you want help.
+            Answer {total} quick questions, get a score and a personal fix list — then send it to me on WhatsApp if you want help.
           </p>
           <ul className="rv">
             <li>Speed &amp; mobile experience</li>
@@ -112,7 +118,7 @@ export default function WebsiteCheck() {
           </ul>
         </div>
 
-        <div className="quiz rv" aria-live="polite">
+        <div className="quiz rv">
           <div className="quiz__top">
             <span>
               {qIndex !== null
@@ -137,7 +143,7 @@ export default function WebsiteCheck() {
           <div className="quiz__panel">
             {step === "intro" && (
               <div>
-                <p className="quiz__q" style={{ marginBottom: "14px" }}>
+                <p ref={prompt} tabIndex={-1} className="quiz__q" style={{ marginBottom: "14px" }}>
                   Let&apos;s see how your website is doing.
                 </p>
                 <p style={{ color: "var(--muted)", fontSize: "15px", marginBottom: "26px" }}>
@@ -155,7 +161,7 @@ export default function WebsiteCheck() {
 
             {step === "goal" && (
               <div>
-                <p className="quiz__q">First — what do you want most right now?</p>
+                <p ref={prompt} tabIndex={-1} className="quiz__q">First — what do you want most right now?</p>
                 <div className="quiz__options quiz__options--grid">
                   {quizGoals.map((g) => (
                     <button
@@ -180,7 +186,7 @@ export default function WebsiteCheck() {
                 <p style={{ fontSize: "13px", color: "var(--muted)", marginBottom: "6px" }}>
                   {quiz[qIndex].area}
                 </p>
-                <p className="quiz__q">{quiz[qIndex].q}</p>
+                <p ref={prompt} tabIndex={-1} className="quiz__q">{quiz[qIndex].q}</p>
                 <div className="quiz__options">
                   {OPTIONS.map((o) => (
                     <button
@@ -205,7 +211,7 @@ export default function WebsiteCheck() {
                   setStep("result");
                 }}
               >
-                <p className="quiz__q" style={{ marginBottom: "6px" }}>
+                <p ref={prompt} tabIndex={-1} className="quiz__q" style={{ marginBottom: "6px" }}>
                   Almost done. Who&apos;s this report for?
                 </p>
                 <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "16px" }}>
@@ -241,23 +247,23 @@ export default function WebsiteCheck() {
               </form>
             )}
 
-            {step === "result" && (
+            {report && (
               <div>
                 <div className="result__head">
                   <div className="result__ring">
-                    <svg viewBox="0 0 100 100">
+                    <svg viewBox="0 0 100 100" aria-hidden="true">
                       <circle cx="50" cy="50" r="46" className="ring-bg" />
                       <circle
                         cx="50"
                         cy="50"
                         r="46"
                         className="ring-fg"
-                        strokeDasharray={C}
-                        strokeDashoffset={C * (1 - score / 100)}
+                        strokeDasharray={RING_CIRCUMFERENCE}
+                        strokeDashoffset={RING_CIRCUMFERENCE * (1 - report.score / 100)}
                       />
                     </svg>
                     <p>
-                      <b>{score}</b>
+                      <b>{report.score}</b>
                       <span>/100</span>
                     </p>
                   </div>
@@ -267,22 +273,27 @@ export default function WebsiteCheck() {
                         ? `Report for ${info.business || info.name}`
                         : "Your website report"}
                     </p>
-                    <h3 style={{ fontSize: "22px", fontWeight: "600", marginTop: "4px" }}>
-                      {tier(score).title}
+                    <h3
+                      ref={prompt}
+                      tabIndex={-1}
+                      aria-label={`${report.score} out of 100. ${report.tier.title}`}
+                      style={{ fontSize: "22px", fontWeight: "600", marginTop: "4px" }}
+                    >
+                      {report.tier.title}
                     </h3>
                     <p style={{ fontSize: "14px", color: "var(--muted)", marginTop: "4px" }}>
-                      {tier(score).text}
+                      {report.tier.text}
                     </p>
                   </div>
                 </div>
 
-                {fixes.length > 0 && (
+                {report.fixes.length > 0 && (
                   <div style={{ marginTop: "20px" }}>
                     <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--muted)" }}>
                       Fix these first
                     </p>
                     <ol className="result__fixes">
-                      {fixes.map((f) => (
+                      {report.fixes.map((f) => (
                         <li className="result__fix" key={f.area}>
                           <b>{f.area}</b>
                           <span>{f.fix}</span>
@@ -293,13 +304,13 @@ export default function WebsiteCheck() {
                   </div>
                 )}
 
-                {wins.length > 0 && (
+                {report.wins.length > 0 && (
                   <div style={{ marginTop: "18px" }}>
                     <p style={{ fontSize: "13px", fontWeight: "600", color: "var(--muted)", marginBottom: "8px" }}>
                       Already working
                     </p>
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-                      {wins.map((w) => (
+                      {report.wins.map((w) => (
                         <span className="pill" key={w.area}>
                           ✓ {w.good}
                         </span>
@@ -311,7 +322,7 @@ export default function WebsiteCheck() {
                 <div className="result__cta">
                   <a
                     className="btn btn--dark"
-                    href={`https://wa.me/${profile.whatsapp}?text=${message}`}
+                    href={`https://wa.me/${profile.whatsapp}?text=${report.message}`}
                     target="_blank"
                     rel="noopener noreferrer"
                   >

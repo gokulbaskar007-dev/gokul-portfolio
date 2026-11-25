@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import Marquee from "./components/Marquee";
@@ -13,11 +10,8 @@ import Journey from "./components/Journey";
 import Contact from "./components/Contact";
 import Faq from "./components/Faq";
 import Footer from "./components/Footer";
-import LivePreviewModal from "./components/LivePreviewModal";
 
 export default function Home() {
-  const [previewUrl, setPreviewUrl] = useState(null);
-
   return (
     <>
       <Header />
@@ -27,7 +21,7 @@ export default function Home() {
         <Services />
         <About />
         <Tools />
-        <Projects onPreview={setPreviewUrl} />
+        <Projects />
         <WebsiteCheck />
         <Journey />
         <Contact />
@@ -36,7 +30,6 @@ export default function Home() {
         <Marquee flat />
       </main>
       <Footer />
-      <LivePreviewModal url={previewUrl} onClose={() => setPreviewUrl(null)} />
     </>
   );
 }

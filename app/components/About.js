@@ -1,10 +1,21 @@
+import { getImageProps } from "next/image";
+import { profile } from "@/data/profile";
+
 export default function About() {
+  const { props: portrait } = getImageProps({
+    src: profile.portrait,
+    alt: "Portrait of Gokul B",
+    width: 1000,
+    height: 1333,
+    sizes: "(max-width: 496px) calc(84.6vw - 20px), 400px",
+  });
+
   return (
     <section className="about" id="about">
       <div className="wrap about__grid">
         <div className="about__photo rv">
           <div className="pc">
-            <img src="/gokul-portrait.webp" alt="Portrait of Gokul B" width={420} height={420} />
+            <img {...portrait} />
           </div>
           <span className="tag t1">Next.js</span>
           <span className="tag t2">3D Web</span>
@@ -36,7 +47,7 @@ export default function About() {
             </div>
           </div>
           <div className="about__cta rv">
-            <a href="/gokul-b-resume.pdf" download className="btn btn--ghost-w">
+            <a href={profile.resume} download className="btn btn--ghost-w">
               Download CV <i>↓</i>
             </a>
             <span className="sign">Gokul</span>
